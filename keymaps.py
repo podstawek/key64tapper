@@ -18,6 +18,8 @@ rawKeys = {'DEL': '0000000', '3': '0000001', '5': '0000010', '7': '0000011', '9'
            '@': '0110101', '↑': '0110110', 'Q': '0110111', '⇅': '0111000', 'LeftShift': '0111001', 'X': '0111010',
            'V': '0111011', 'N': '0111100', ',': '0111101', '/': '0111110', 'RunStop': '0111111', 'Restore': '1000000'}
 
+# Filling the following slowly for my Mac as needed :)
+# User-supplied keymaps are necessary -- To Do
 defaultMap = {0: "",  # NUL (Null char)
               1: "",  # SOH (Start of Heading)
               2: "",  # STX (Start of Text)

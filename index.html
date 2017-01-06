@@ -9,13 +9,13 @@
 
 <div style="font-size: small">
 Created: January 4, 2017<br>
-Last change: January 5, 2017<br>
+Last change: January 6, 2017<br>
 Author: <a href="http://podstawczynski.com">Adam Podstawczyński</a>. Feel free to use any materials in this tutorial, please send me an email if you find it useful :)<br>
 </div>
 
 <h1>C64 Keyboard Emulator</h1>
 
-<p>This project, consisting of hardware and software, emulates the keyboard of Commodore 64. It allows one to send a string of characters using the supplied Python script, and have it displayed on the C64 screen.</p>
+<p>This project emulates the keyboard of Commodore 64. It allows one to send a string of characters, or interactively type in characters, using the supplied Python script, and have it displayed on the C64 screen.</p>
 
 <h2>How it Works</h2>
 <p>A Python script on the computer accepts text to type in various forms (e.g. interactively typed-in, from command line, redirected from other command).
@@ -34,10 +34,10 @@ column pin being shorted with a particular row pin, i.e. effectively pressing a 
 <h2>Features / Work in Progress</h2>
 <ul>
     <li>Entirely hardware-based emulation (i.e. it behaves as if someone was typing on the physical keyboard of a C64) (<span class="done">done</span>)</li>
-    <li>Any key combinations supported, including combinations with Restore key (<span class="done">done</span>)</li>
-    <li>Multiple ways of sending keys to press: raw keys (<span class="done">done</span>), pre-typed text in batch mode (<span class="notdone">done</span>), pipe from a different command (<span class="notdone">work in progress</span>), or interactive typing on a keyboard (<span class="done">done</span>)</li>
+    <li>Any key combinations supported, including combinations with Restore key (Restore key implemented on hardware side as a separate address line and switched with a transistor, but not supported by code yet)</li>
+    <li>Multiple ways of sending keys to press: raw keys (<span class="done">done</span>), pre-typed text in batch mode (<span class="done">done</span>), pipe from a different command (<span class="notdone">work in progress</span>), or interactive typing on a keyboard (<span class="done">done</span>)</li>
     <li>Potential macro functionality possible, e.g. timed keystrokes, delays, loops (<span class="notdone">work in progress</span>)</li>
-    <li>Platform-independent script on computer side (Python script using standard modules, tested on a Mac, should work on Windows/Linux) (<span class="done">done</span>)</li>
+    <li>Platform-independent script on computer side (Python script tested on a Mac, should work on Windows/Linux) (<span class="done">done</span>)</li>
     <li>Concepts of momentary pressing a key (<span class="done">done</span>) and holding a key (<span class="notdone">work in progress</span>)</li>
 </ul>
 
@@ -46,6 +46,7 @@ column pin being shorted with a particular row pin, i.e. effectively pressing a 
 <iframe width="560" height="315" src="https://www.youtube.com/embed/hs4nn6a3F-A" frameborder="0" allowfullscreen></iframe>
 
 <h3>Interactive Mode</h3>
+<iframe width="560" height="315" src="https://www.youtube.com/embed/npyvF8erGbU" frameborder="0" allowfullscreen></iframe>
 
 <h2>Hardware</h2>
 <h3>What You Need</h3>
@@ -69,14 +70,13 @@ column pin being shorted with a particular row pin, i.e. effectively pressing a 
 
 
 <h2>Software</h2>
-<h3>On Computer</h3>
-<!--<script src="http://gist-it.appspot.com/github/podstawek/key64tapper/blob/master/key64tapper.py"></script>-->
+<p>The Python script and Arduino code are currently incomplete, and have been written quickly to prove the concept. Use at your risk and expect many issues: <a href="https://github.com/podstawek/key64tapper">download from github</a>. Improved versions coming.</p>
 
 
-<h3>On Arduino</h3>
+<h2>Reference Material</h2>
+<a href="http://datasheet.elcodis.com/pdf2/89/57/895754/mt8808.pdf">MT8808 Crosspoint Switch Datasheet</a>
 
-
-<h2>Key/Pin/Signal Mapping</h2>
+<h3>Key/Pin/Signal Mapping</h3>
 <code>
 <table >
 <tr><td>C64 Key</td><td>C64 Pins</td><td>C64 Ports</td><td>8088</td><td>AY2</td><td>AY1</td><td>AY0</td><td>AX2</td><td>AX1</td><td>AX0</td></tr>

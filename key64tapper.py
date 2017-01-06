@@ -44,7 +44,6 @@ if not parserResults.dummy:
 time.sleep(1)
 
 # Now that we have the connection open, write to it
-
 if parserResults.rawString:
     for k in parserResults.rawString.split(' '):
         combined = ''
@@ -63,7 +62,6 @@ if parserResults.rawString:
         time.sleep(.05)
 
 elif parserResults.interactive:
-
     print("You can start typing now :)")
 
     while True:
@@ -93,7 +91,7 @@ elif parserResults.interactive:
             arduino.write(combined + '\n')
 
 
-#
+# This returns over serial port whatever is sent to Arduino -- for debugging
 #
 # while True:
 #     data = arduino.readline()
