@@ -1,12 +1,151 @@
 <html>
 <head>
-
+    <title>C64 Keyboard Emulator</title>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" type="text/css" href="style.css" media="screen" />
 </head>
 
 <body>
 
+<div style="font-size: small">
+Created: January 4, 2017<br>
+Last change: January 5, 2017<br>
+Author: <a href="http://podstawczynski.com">Adam Podstawczyński</a>. Feel free to use any materials in this tutorial, please send me an email if you find it useful :)<br>
+</div>
 
-This project, consisting of hardware and software, emulates the keyboard of Commodore 64. Send a string of characters using the supplied Python script, and have it displayed on your C64 screen.
+<h1>C64 Keyboard Emulator</h1>
+
+<p>This project, consisting of hardware and software, emulates the keyboard of Commodore 64. It allows one to send a string of characters using the supplied Python script, and have it displayed on the C64 screen.</p>
+
+<h2>How it Works</h2>
+<p>A Python script on the computer accepts text to type in various forms (e.g. interactively typed-in, from command line, redirected from other command).
+The script maps the text to keys or key combinations, and then as another step maps those to 6-bit binary codes. Then the codes are passed via the serial interface (here USB) to the Arduino microcontroller. A listening program on the Arduino accepts the codes
+and sends them as 6-bit addresses to the write-only memory of an 8x8 crosspoint switch (MT8808), along with 1-bit data. A 6-bit address + 1-bit data are equivalent to "a specific key on" or "a specific key off" command. The command is latched in the crosspoint switch using a strobe signal which results in a particular
+column pin being shorted with a particular row pin, i.e. effectively pressing a specific key on C64. In case of key combinations, 2 or more such "commands" are queued before latching. The Restore key which is activated by connecting to ground needs a separate handling using a transistor.</p>
+
+<h2>Possible Uses</h2>
+    <ul>
+        <li>Test the C64 keyboard interface from PC</li>
+        <li>Build a key macro and "play" it on C64 for demonstration purposes</li>
+        <li>Quickly input a long BASIC listing, e.g. type it in favorite editor, then send to C64</li>
+        <li>Use your favorite keyboard as C64 input (via interactive mode)</li>
+    </ul>
+
+<h2>Features / Work in Progress</h2>
+<ul>
+    <li>Entirely hardware-based emulation (i.e. it behaves as if someone was typing on the physical keyboard of a C64) (<span class="done">done</span>)</li>
+    <li>Any key combinations supported, including combinations with Restore key (<span class="done">done</span>)</li>
+    <li>Multiple ways of sending keys to press: raw keys (<span class="done">done</span>), pre-typed text in batch mode (<span class="notdone">done</span>), pipe from a different command (<span class="notdone">work in progress</span>), or interactive typing on a keyboard (<span class="done">done</span>)</li>
+    <li>Potential macro functionality possible, e.g. timed keystrokes, delays, loops (<span class="notdone">work in progress</span>)</li>
+    <li>Platform-independent script on computer side (Python script using standard modules, tested on a Mac, should work on Windows/Linux) (<span class="done">done</span>)</li>
+    <li>Concepts of momentary pressing a key (<span class="done">done</span>) and holding a key (<span class="notdone">work in progress</span>)</li>
+</ul>
+
+<h2>Demo</h2>
+<h3>Pre-typed Text Passed as Command Line Option</h3>
+<iframe width="560" height="315" src="https://www.youtube.com/embed/hs4nn6a3F-A" frameborder="0" allowfullscreen></iframe>
+
+<h3>Interactive Mode</h3>
+
+<h2>Hardware</h2>
+<h3>What You Need</h3>
+<ul>
+    <li>A computer. This was tested on a Mac, but any Linux/Windows with Python installation should work too.</li>
+    <li>Any working Commodore 64 main board. Bare board is fine, no need for a case or keyboard.</li>
+    <li>Any modern Arduino board. I used Arduino Mega 2560, but this is an overkill -- the total of 10 digital output pins are needed, and the compiled code doesn't take up much memory (currently ~5KB), so I believe even the tiny Arduino Nano should do.</li>
+    <li>MT8808ae crosspoint switch in DIP package (PLCC package only if you want to use surface mounting).</li>
+    <li>An NPN transistor. I used BC547B.</li>
+    <li>A 10kΩ resistor. 1kΩ should work too.</li>
+    <li>A breadboard. Of course, you can build and use a PCB instead if you wish.</li>
+    <li>Single row pin male/female connectors to make the connections neater (but connecting wires directly works too).</li>
+    <li>Approx. 35 patch wires, including 20 with male-female connectors and 15 with male-male connectors. If the male-female and male-male are packaged as ribbon/tape cables, that's even better; otherwise we end up with a cobweb of wires.</li>
+    <li>A USB cable for connecting the Arduino to the PC.</li>
+</ul>
+
+<h3>Connections</h3>
+<p>Make the following connections. If you want to use different digital pins on the Arduino, remember to adjust the numbers in the code later.</p>
+
+<a href="files/breadboard.png"><img src="files/breadboard.png" width="800"></a>
+
+
+<h2>Software</h2>
+<h3>On Computer</h3>
+<!--<script src="http://gist-it.appspot.com/github/podstawek/key64tapper/blob/master/key64tapper.py"></script>-->
+
+
+<h3>On Arduino</h3>
+
+
+<h2>Key/Pin/Signal Mapping</h2>
+<code>
+<table >
+<tr><td>C64 Key</td><td>C64 Pins</td><td>C64 Ports</td><td>8088</td><td>AY2</td><td>AY1</td><td>AY0</td><td>AX2</td><td>AX1</td><td>AX0</td></tr>
+<tr><td>DEL</td><td>13 12</td><td>PA0 PB0</td><td>X0Y0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td></tr>
+<tr><td>3</td><td>19 12</td><td>PA1 PB0</td><td>X1Y0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>1</td></tr>
+<tr><td>5</td><td>18 12</td><td>PA2 PB0</td><td>X2Y0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>1</td><td>0</td></tr>
+<tr><td>7</td><td>17 12</td><td>PA3 PB0</td><td>X3Y0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>1</td><td>1</td></tr>
+<tr><td>9</td><td>16 12</td><td>PA4 PB0</td><td>X4Y0</td><td>0</td><td>0</td><td>0</td><td>1</td><td>0</td><td>0</td></tr>
+<tr><td>+</td><td>15 12</td><td>PA5 PB0</td><td>X5Y0</td><td>0</td><td>0</td><td>0</td><td>1</td><td>0</td><td>1</td></tr>
+<tr><td>£</td><td>14 12</td><td>PA6 PB0</td><td>X6Y0</td><td>0</td><td>0</td><td>0</td><td>1</td><td>1</td><td>0</td></tr>
+<tr><td>1</td><td>20 12</td><td>PA7 PB0</td><td>X7Y0</td><td>0</td><td>0</td><td>0</td><td>1</td><td>1</td><td>1</td></tr>
+<tr><td>Return</td><td>13 11</td><td>PA0 PB1</td><td>X0Y1</td><td>0</td><td>0</td><td>1</td><td>0</td><td>0</td><td>0</td></tr>
+<tr><td>W</td><td>19 11</td><td>PA1 PB1</td><td>X1Y1</td><td>0</td><td>0</td><td>1</td><td>0</td><td>0</td><td>1</td></tr>
+<tr><td>R</td><td>18 11</td><td>PA2 PB1</td><td>X2Y1</td><td>0</td><td>0</td><td>1</td><td>0</td><td>1</td><td>0</td></tr>
+<tr><td>Y</td><td>17 11</td><td>PA3 PB1</td><td>X3Y1</td><td>0</td><td>0</td><td>1</td><td>0</td><td>1</td><td>1</td></tr>
+<tr><td>I</td><td>16 11</td><td>PA4 PB1</td><td>X4Y1</td><td>0</td><td>0</td><td>1</td><td>1</td><td>0</td><td>0</td></tr>
+<tr><td>P</td><td>15 11</td><td>PA5 PB1</td><td>X5Y1</td><td>0</td><td>0</td><td>1</td><td>1</td><td>0</td><td>1</td></tr>
+<tr><td>*</td><td>14 11</td><td>PA6 PB1</td><td>X6Y1</td><td>0</td><td>0</td><td>1</td><td>1</td><td>1</td><td>0</td></tr>
+<tr><td><-</td><td>20 11</td><td>PA7 PB1</td><td>X7Y1</td><td>0</td><td>0</td><td>1</td><td>1</td><td>1</td><td>1</td></tr>
+<tr><td>_</td><td>13 10</td><td>PA0 PB2</td><td>X0Y2</td><td>0</td><td>1</td><td>0</td><td>0</td><td>0</td><td>0</td></tr>
+<tr><td>A</td><td>19 10</td><td>PA1 PB2</td><td>X1Y2</td><td>0</td><td>1</td><td>0</td><td>0</td><td>0</td><td>1</td></tr>
+<tr><td>D</td><td>18 10</td><td>PA2 PB2</td><td>X2Y2</td><td>0</td><td>1</td><td>0</td><td>0</td><td>1</td><td>0</td></tr>
+<tr><td>G</td><td>17 10</td><td>PA3 PB2</td><td>X3Y2</td><td>0</td><td>1</td><td>0</td><td>0</td><td>1</td><td>1</td></tr>
+<tr><td>J</td><td>16 10</td><td>PA4 PB2</td><td>X4Y2</td><td>0</td><td>1</td><td>0</td><td>1</td><td>0</td><td>0</td></tr>
+<tr><td>L</td><td>15 10</td><td>PA5 PB2</td><td>X5Y2</td><td>0</td><td>1</td><td>0</td><td>1</td><td>0</td><td>1</td></tr>
+<tr><td>;</td><td>14 10</td><td>PA6 PB2</td><td>X6Y2</td><td>0</td><td>1</td><td>0</td><td>1</td><td>1</td><td>0</td></tr>
+<tr><td>CTRL</td><td>20 10</td><td>PA7 PB2</td><td>X7Y2</td><td>0</td><td>1</td><td>0</td><td>1</td><td>1</td><td>1</td></tr>
+<tr><td>F7</td><td>19 5</td><td>PA1 PB3</td><td>X1Y3</td><td>0</td><td>1</td><td>1</td><td>0</td><td>0</td><td>0</td></tr>
+<tr><td>4</td><td>18 5</td><td>PA2 PB3</td><td>X2Y3</td><td>0</td><td>1</td><td>1</td><td>0</td><td>0</td><td>1</td></tr>
+<tr><td>6</td><td>17 5</td><td>PA3 PB3</td><td>X3Y3</td><td>0</td><td>1</td><td>1</td><td>0</td><td>1</td><td>0</td></tr>
+<tr><td>8</td><td>16 5</td><td>PA4 PB3</td><td>X4Y3</td><td>0</td><td>1</td><td>1</td><td>0</td><td>1</td><td>1</td></tr>
+<tr><td>0</td><td>15 5</td><td>PA5 PB3</td><td>X5Y3</td><td>0</td><td>1</td><td>1</td><td>1</td><td>0</td><td>0</td></tr>
+<tr><td>-</td><td>14 5</td><td>PA6 PB3</td><td>X6Y3</td><td>0</td><td>1</td><td>1</td><td>1</td><td>0</td><td>1</td></tr>
+<tr><td>Home</td><td>14 5</td><td>PA6 PB3</td><td>X6Y3</td><td>0</td><td>1</td><td>1</td><td>1</td><td>1</td><td>0</td></tr>
+<tr><td>2</td><td>20 5</td><td>PA7 PB3</td><td>X7Y3</td><td>0</td><td>1</td><td>1</td><td>1</td><td>1</td><td>1</td></tr>
+<tr><td>F1</td><td>13 8</td><td>PA0 PB4</td><td>X0Y4</td><td>1</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td></tr>
+<tr><td>Z</td><td>19 8</td><td>PA1 PB4</td><td>X1Y4</td><td>1</td><td>0</td><td>0</td><td>0</td><td>0</td><td>1</td></tr>
+<tr><td>C</td><td>18 8</td><td>PA2 PB4</td><td>X2Y4</td><td>1</td><td>0</td><td>0</td><td>0</td><td>1</td><td>0</td></tr>
+<tr><td>B</td><td>17 8</td><td>PA3 PB4</td><td>X3Y4</td><td>1</td><td>0</td><td>0</td><td>0</td><td>1</td><td>1</td></tr>
+<tr><td>M</td><td>16 8</td><td>PA4 PB4</td><td>X4Y4</td><td>1</td><td>0</td><td>0</td><td>1</td><td>0</td><td>0</td></tr>
+<tr><td>.</td><td>15 8</td><td>PA5 PB4</td><td>X5Y4</td><td>1</td><td>0</td><td>0</td><td>1</td><td>0</td><td>1</td></tr>
+<tr><td>Right Shift</td><td>14 8</td><td>PA6 PB4</td><td>X6Y4</td><td>1</td><td>0</td><td>0</td><td>1</td><td>1</td><td>0</td></tr>
+<tr><td>Space</td><td>20 8</td><td>PA7 PB4</td><td>X7Y4</td><td>1</td><td>0</td><td>0</td><td>1</td><td>1</td><td>1</td></tr>
+<tr><td>F3</td><td>13 7</td><td>PA0 PB5</td><td>X0Y5</td><td>1</td><td>0</td><td>1</td><td>0</td><td>0</td><td>0</td></tr>
+<tr><td>S</td><td>19 7</td><td>PA1 PB5</td><td>X1Y5</td><td>1</td><td>0</td><td>1</td><td>0</td><td>0</td><td>1</td></tr>
+<tr><td>F</td><td>18 7</td><td>PA2 PB5</td><td>X2Y5</td><td>1</td><td>0</td><td>1</td><td>0</td><td>1</td><td>0</td></tr>
+<tr><td>H</td><td>17 7</td><td>PA3 PB5</td><td>X3Y5</td><td>1</td><td>0</td><td>1</td><td>0</td><td>1</td><td>1</td></tr>
+<tr><td>K</td><td>16 7</td><td>PA4 PB5</td><td>X4Y5</td><td>1</td><td>0</td><td>1</td><td>1</td><td>0</td><td>0</td></tr>
+<tr><td>:</td><td>15 7</td><td>PA5 PB5</td><td>X5Y5</td><td>1</td><td>0</td><td>1</td><td>1</td><td>0</td><td>1</td></tr>
+<tr><td>=</td><td>14 7</td><td>PA6 PB5</td><td>X6Y5</td><td>1</td><td>0</td><td>1</td><td>1</td><td>1</td><td>0</td></tr>
+<tr><td>Commodore</td><td>20 7</td><td>PA7 PB5</td><td>X7Y5</td><td>1</td><td>0</td><td>1</td><td>1</td><td>1</td><td>1</td></tr>
+<tr><td>F5</td><td>13 6</td><td>PA0 PB6</td><td>X0Y6</td><td>1</td><td>1</td><td>0</td><td>0</td><td>0</td><td>0</td></tr>
+<tr><td>E</td><td>19 6</td><td>PA1 PB6</td><td>X1Y6</td><td>1</td><td>1</td><td>0</td><td>0</td><td>0</td><td>1</td></tr>
+<tr><td>T</td><td>18 6</td><td>PA2 PB6</td><td>X2Y6</td><td>1</td><td>1</td><td>0</td><td>0</td><td>1</td><td>0</td></tr>
+<tr><td>U</td><td>17 6</td><td>PA3 PB6</td><td>X3Y6</td><td>1</td><td>1</td><td>0</td><td>0</td><td>1</td><td>1</td></tr>
+<tr><td>O</td><td>16 6</td><td>PA4 PB6</td><td>X4Y6</td><td>1</td><td>1</td><td>0</td><td>1</td><td>0</td><td>0</td></tr>
+<tr><td>@</td><td>15 6</td><td>PA5 PB6</td><td>X5Y6</td><td>1</td><td>1</td><td>0</td><td>1</td><td>0</td><td>1</td></tr>
+<tr><td>_</td><td>14 6</td><td>PA6 PB6</td><td>X6Y6</td><td>1</td><td>1</td><td>0</td><td>1</td><td>1</td><td>0</td></tr>
+<tr><td>Q</td><td>20 6</td><td>PA7 PB6</td><td>X7Y6</td><td>1</td><td>1</td><td>0</td><td>1</td><td>1</td><td>1</td></tr>
+<tr><td>_</td><td>13 9</td><td>PA0 PB7</td><td>X0Y7</td><td>1</td><td>1</td><td>1</td><td>0</td><td>0</td><td>0</td></tr>
+<tr><td>Left Shift</td><td>19 9</td><td>PA1 PB7</td><td>X1Y7</td><td>1</td><td>1</td><td>1</td><td>0</td><td>0</td><td>1</td></tr>
+<tr><td>X</td><td>18 9</td><td>PA2 PB7</td><td>X2Y7</td><td>1</td><td>1</td><td>1</td><td>0</td><td>1</td><td>0</td></tr>
+<tr><td>V</td><td>17 9</td><td>PA3 PB7</td><td>X3Y7</td><td>1</td><td>1</td><td>1</td><td>0</td><td>1</td><td>1</td></tr>
+<tr><td>N</td><td>16 9</td><td>PA4 PB7</td><td>X4Y7</td><td>1</td><td>1</td><td>1</td><td>1</td><td>0</td><td>0</td></tr>
+<tr><td>,</td><td>15 9</td><td>PA5 PB7</td><td>X5Y7</td><td>1</td><td>1</td><td>1</td><td>1</td><td>0</td><td>1</td></tr>
+<tr><td>/</td><td>14 9</td><td>PA6 PB7</td><td>X6Y7</td><td>1</td><td>1</td><td>1</td><td>1</td><td>1</td><td>0</td></tr>
+<tr><td>Run/Stop</td><td>20 9</td><td>PA7 PB7</td><td>X7Y7</td><td>1</td><td>1</td><td>1</td><td>1</td><td>1</td><td>1</td></tr>
+</table>
+    </code>
 
 
 </body>

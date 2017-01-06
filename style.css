@@ -1,0 +1,27 @@
+body {  margin: 5%;
+        font-family: "Helvetica Neue Light", "HelveticaNeue-Light", "Helvetica Neue", Calibri, Helvetica, Arial, sans-serif;
+    }
+h1, h2, h3 {color: darkslategray}
+
+
+
+table {
+
+    border-collapse: collapse;
+}
+td {
+		border: darkslategray 1px solid;
+	}
+	tr {
+		background: #b8d1f3;
+	}
+
+tr td:nth-child(odd){
+		background: lightgrey;
+	}
+tr td:nth-child(even){
+		background: whitesmoke;
+	}
+
+.done {color: green; font-weight: bold}
+.notdone {color: red; font-weight: bold}
